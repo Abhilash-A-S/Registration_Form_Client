@@ -1,0 +1,249 @@
+<!DOCTYPE html v-cloak>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vee-validate@<3.0.0/dist/vee-validate.js"></script>
+</head>
+
+<body>
+    <div id="app" class="page">
+        <section class="register-entry" v-if="showSection == 'Register'">
+            <button class="action-btn" @click="showSection = 'RegistrationForm'">Register</button>
+        </section>
+        <section class="page-section register-form" v-else-if="showSection == 'RegistrationForm'">
+            <div class="sidebar">
+                <div class="photo-placeholder">
+                    <img v-if="registrationObject.profileImage" :src="registrationObject.profileImage" alt=""
+                        class="profile-photo">
+                    <label for="imageUpload" v-else>Upload<br> your photo</label>
+                    <input id="imageUpload" class="custom-file-input" type="file" accept="image/*"
+                        @change="previewImage($event)" name="profileImage">
+                </div>
+                <span v-if="customValidation.imageValidation" class="labelError">Please Upload Photo</span>
+            </div>
+            <div class="main-content">
+                <form id="entry" class="entry-form">
+                    <div class="form-field">
+                        <span class="field-title">Name</span>
+                        <span class="field-input name-field">
+                            <span class="col-half">
+                                <input type="text" name="firstName" v-model="registrationObject.firstName"
+                                    placeholder="First Name" v-validate="{required: true,regex: /^[a-zA-Z]+$/}"
+                                    :class="{'error':errors.has('firstName')}" maxlength="20">
+                                <span v-if="errors.has('firstName')">
+                                    <span class="labelError"
+                                        v-if="errors.items.filter(obj => obj.field == 'firstName')[0].rule == 'required'">Please
+                                        Enter
+                                        First Name</span>
+                                    <span class="labelError"
+                                        v-if="errors.items.filter(obj => obj.field == 'firstName')[0].rule == 'regex'">Allow
+                                        only alphabets</span>
+                                </span>
+                            </span>
+                            <span class="col-half">
+                                <input type="text" name="lastName" v-model="registrationObject.lastName"
+                                    placeholder="Last Name" v-validate="{required: true,regex: /^[a-zA-Z ]*$/}"
+                                    :class="{'error':errors.has('lastName')}" maxlength="20">
+                                <span v-if="errors.has('lastName')">
+                                    <span class="labelError"
+                                        v-if="errors.items.filter(obj => obj.field == 'lastName')[0].rule == 'required'">Please
+                                        Enter
+                                        Last Name</span>
+                                    <span class="labelError"
+                                        v-if="errors.items.filter(obj => obj.field == 'lastName')[0].rule == 'regex'">Allow
+                                        only alphabets</span>
+                                </span>
+
+                            </span>
+                        </span>
+                    </div>
+                    <div class="form-field">
+                        <span class="field-title">Age</span>
+                        <span class="field-input">
+                            <input type="range" min="13" max="50" value="24" class="slider" id="age" name="age"
+                                v-model="registrationObject.age">
+                            <span class="range-details">
+                                <span>13 - 19</span>
+                                <span>20 - 29</span>
+                                <span>30 - 45</span>
+                                <span>45 & above</span>
+                            </span>
+                        </span>
+                    </div>
+
+                    <div class="form-field">
+                        <span class="field-title">Email</span>
+                        <span class="field-input">
+                            <input type="text" name="email" v-model="registrationObject.email" placeholder="Enter Email"
+                                v-validate="{required: true ,regex:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/}"
+                                :class="{'error':errors.has('email')}">
+                            <span v-if="errors.has('email')">
+                                <span class="labelError"
+                                    v-if="errors.items.filter(obj => obj.field == 'email')[0].rule == 'required'">Please
+                                    Enter Email</span>
+                                <span class="labelError"
+                                    v-if="errors.items.filter(obj => obj.field == 'email')[0].rule == 'regex'">Please
+                                    Enter Valid Email</span>
+                            </span>
+                        </span>
+                    </div>
+
+                    <div class="form-field">
+                        <span class="field-title">Tel</span>
+                        <span class="field-input">
+                            <input type="text" min="3" maxlength="12" name="telePhoneNumber"
+                                v-model="registrationObject.phoneNumber" placeholder="Enter Number"
+                                v-validate="{required: true,regex:/^\+?[1-9]{1}[0-9]{3,14}$/}"
+                                :class="{'error':errors.has('telePhoneNumber')}">
+                            <span v-if="errors.has('telePhoneNumber')">
+                                <span class="labelError"
+                                    v-if="errors.items.filter(obj => obj.field == 'telePhoneNumber')[0].rule == 'required'">Please
+                                    Enter Phone
+                                    Number</span>
+                                <span class="labelError"
+                                    v-if="errors.items.filter(obj => obj.field == 'telePhoneNumber')[0].rule == 'regex'">Enter
+                                    Valid Phone Number</span>
+                            </span>
+                        </span>
+                    </div>
+
+                    <div class="form-field">
+                        <span class="field-title">State</span>
+                        <span class="field-input">
+                            <select name="state" v-model="registrationObject.state" v-validate="{required: true}"
+                                :class="{'error':errors.has('state')}">
+                                <option value="">Please Select State</option>
+                                <option :value="state" v-for="state in dropDownList.state">{{state}}</option>
+                            </select>
+                            <span class="labelError" v-if="errors.has('state')">Please Enter State</span>
+                        </span>
+                    </div>
+                    <div class="form-field">
+                        <span class="field-title">Country</span>
+                        <span class="field-input">
+                            <select name="country" id="country" v-model="registrationObject.country"
+                                v-validate="{required: true}" :class="{'error':errors.has('country')}">
+                                <option value="">Please Select Country</option>
+                                <option :value="country" v-for="country in dropDownList.country">{{country}}</option>
+                            </select>
+                            <span class="labelError" v-if="errors.has('country')">Please Select Country</span>
+                        </span>
+                    </div>
+
+                    <div class="form-field">
+                        <span class="field-title">Address</span>
+                        <span class="field-input">
+                            <select name="address" id="address" v-model="registrationObject.address"
+                                v-validate="{required: true}" :class="{'error':errors.has('address')}"
+                                @change="changeAddressTrigger()">
+                                <option value="">Please Select Address</option>
+                                <option :value="address" v-for="address in dropDownList.address">{{address}}</option>
+                            </select>
+                            <span class="labelError" v-if="errors.has('address')">Please Select Address</span>
+                            <div v-if="registrationObject.address">
+                                <div class="form-address">
+                                    <span
+                                        class="field-title">{{registrationObject.address == 'Company' ? 'Company' : ''}}
+                                        Address 1</span>
+                                    <textarea id="address1" name="address1" v-model="registrationObject.address1"
+                                        v-validate="{ required: true}"
+                                        :class="{'error':errors.has('address1')}"></textarea>
+                                    <span class="labelError" v-if="errors.has('address1')">Please Enter
+                                        {{registrationObject.address}} Address 1</span>
+                                </div>
+                                <div class="form-address">
+                                    <span
+                                        class="field-title">{{registrationObject.address == 'Company' ? 'Company' : ''}}
+                                        Address 2</span>
+                                    <textarea id="address2" name="address2" v-model="registrationObject.address2"
+                                        v-validate="{ required: true}"
+                                        :class="{'error':errors.has('address2')}"></textarea>
+                                    <span class="labelError" v-if="errors.has('address2')">Please Enter
+                                        {{registrationObject.address}} Address 2</span>
+                                </div>
+                            </div>
+                        </span>
+                    </div>
+
+                    <div class="form-field">
+                        <span class="field-title">Interests</span>
+                        <span class="field-input">
+                            <input type="text" id="interests" name="interests" placeholder="Enter Interests"
+                                v-model="registrationObject.interests" @input="interestsInputChange()"
+                                v-validate="{required: true}" :class="{'error':errors.has('interests')}">
+                            <span class="labelError" v-if="errors.has('interests')">Please Enter Interests</span>
+                            <div class="interest-list">
+                                <span class="item"
+                                    v-for="(selectedItem,index) in registrationObject.selectedInterests"><span>{{selectedItem}}</span><span
+                                        class="close-btn" @click="removeSelectedInterests(index)">&times;</span></span>
+                            </div>
+                        </span>
+                    </div>
+
+                    <div class="form-field">
+                        <span class="field-title"></span>
+                        <span class="field-input">
+                            <input type="checkbox" name="subscribe" id="subscribe"
+                                v-model="registrationObject.subscribe" v-validate="{required: true}"
+                                :class="{'error':errors.has('subscribe')}">
+                            <label for="subscribe">Subscribe to the news letter</label>
+                            <span class="labelError" v-if="errors.has('subscribe')">Please check Subscribe to
+                                continue</span>
+                        </span>
+                    </div>
+
+                    <div class="form-field submit-button">
+                        <span class="field-title"></span>
+                        <span class="field-input">
+                            <div class="action-btn medium" @click="submitButtonClicked()">submit</div>
+                        </span>
+                    </div>
+
+                </form>
+
+            </div>
+        </section>
+        <section class="page-section register-result" v-else-if="showSection == 'formPreView'">
+
+            <div class="sidebar">
+                <img :src="registrationObject.profileImage" alt="" class="profile-photo">
+                <ul class="edit-menu">
+                    <li><label for="editProfile"><u>Edit Photo</u></label>
+                        <input id="editProfile" class="custom-file-input" type="file" accept="image/*"
+                            @change="previewImage($event)">
+                    </li>
+                    <li @click="showSection = 'RegistrationForm'"><u>Edit Profile</u></li>
+                </ul>
+            </div>
+            <div class="main-content">
+                <div class="form-summary">
+                    I am <span>{{registrationObject.firstName}} {{registrationObject.lastName}}</span> and I am
+                    <span>above {{registrationObject.age}} years</span> and you can send your emails
+                    to <span>{{registrationObject.email}}</span>. I lives in the state of
+                    <span>{{registrationObject.state}}</span>. I likes to <span
+                        v-for="(interests,index) in  registrationObject.selectedInterests">
+                        {{index == 0 ? 'play '+interests : index+1 != registrationObject.selectedInterests.length ? ', '+interests:'' }}
+                        <span
+                            v-if="registrationObject.selectedInterests.length > 1 && index+1 == registrationObject.selectedInterests.length"
+                            class="normal-text">
+                            and
+                            <span>{{interests}}.</span>
+                        </span>
+                    </span>
+                    Please send me the news letters. Please
+                    reach out to me on my phone <span>{{registrationObject.phoneNumber}}</span>.
+                </div>
+                <button class="action-btn medium">Agree</button>
+            </div>
+
+        </section>
+    </div>
+</body>
+<script src="index.js"></script>
+
+</html>
