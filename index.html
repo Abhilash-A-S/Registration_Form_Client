@@ -33,7 +33,7 @@
                         <span class="field-input name-field">
                             <span class="col-half">
                                 <input type="text" name="firstName" v-model="registrationObject.firstName"
-                                    placeholder="First Name" v-validate="{required: true,regex: /^[a-zA-Z]+$/}"
+                                    placeholder="First Name" v-validate="{required: true,regex: /^[a-zA-Z ]*$/}"
                                     :class="{'error':errors.has('firstName')}" maxlength="20">
                                 <span v-if="errors.has('firstName')">
                                     <span class="labelError"
